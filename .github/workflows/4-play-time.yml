@@ -54,7 +54,9 @@ jobs:
           issue-number: ${{ env.ISSUE_NUMBER }}
           file: ${{ env.REVIEW_FILE }}
       - name: Disable current workflow
-        run: gh workflow disable "${{github.workflow}}"
+        # Use the workflow file name (not the display name) so this also works
+        # when the workflow has already been turned off by an earlier run.
+        run: gh workflow disable "4-play-time.yml"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
