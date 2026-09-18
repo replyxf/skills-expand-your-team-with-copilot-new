@@ -571,6 +571,9 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Add social sharing buttons
+    activityCard.appendChild(createShareSection(name, details, formattedSchedule));
+
     // Add click handlers for delete buttons
     const deleteButtons = activityCard.querySelectorAll(".delete-participant");
     deleteButtons.forEach((button) => {
@@ -588,6 +591,121 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     activitiesList.appendChild(activityCard);
+  }
+
+  // Build a shareable link that points directly to an activity
+  function getActivityShareUrl(name) {
+    const url = new URL(window.location.href);
+    url.hash = "";
+    url.search = `?activity=${encodeURIComponent(name)}`;
+    return url.toString();
+  }
+
+  // Build the text used when sharing an activity
+  function getActivityShareText(name, details, formattedSchedule) {
+    return `Check out "${name}" at Mergington High School! ${details.description} Schedule: ${formattedSchedule}`;
+  }
+
+  // Create the social sharing section for an activity card
+  function createShareSection(name, details, formattedSchedule) {
+    const shareUrl = getActivityShareUrl(name);
+    const shareText = getActivityShareText(name, details, formattedSchedule);
+
+    const container = document.createElement("div");
+    container.className = "share-container";
+
+    const label = document.createElement("span");
+    label.className = "share-label";
+    label.textContent = "Share:";
+    container.appendChild(label);
+
+    const buttons = document.createElement("div");
+    buttons.className = "share-buttons";
+
+    const shareTargets = [
+      {
+        name: "twitter",
+        label: "X",
+        title: "Share on X (Twitter)",
+        url: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+          shareText
+        )}&url=${encodeURIComponent(shareUrl)}`,
+      },
+      {
+        name: "facebook",
+        label: "f",
+        title: "Share on Facebook",
+        url: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          shareUrl
+        )}`,
+      },
+      {
+        name: "whatsapp",
+        label: "W",
+        title: "Share on WhatsApp",
+        url: `https://wa.me/?text=${encodeURIComponent(
+          `${shareText} ${shareUrl}`
+        )}`,
+      },
+      {
+        name: "email",
+        label: "✉",
+        title: "Share by email",
+        url: `mailto:?subject=${encodeURIComponent(
+          `Activity: ${name}`
+        )}&body=${encodeURIComponent(`${shareText}\n\n${shareUrl}`)}`,
+      },
+    ];
+
+    shareTargets.forEach((target) => {
+      const link = document.createElement("a");
+      link.className = `share-button share-${target.name}`;
+      link.href = target.url;
+      link.title = target.title;
+      link.setAttribute("aria-label", target.title);
+      link.textContent = target.label;
+      if (target.name !== "email") {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      buttons.appendChild(link);
+    });
+
+    // Copy link button
+    const copyButton = document.createElement("button");
+    copyButton.type = "button";
+    copyButton.className = "share-button share-copy";
+    copyButton.title = "Copy link";
+    copyButton.setAttribute("aria-label", "Copy link");
+    copyButton.textContent = "🔗";
+    copyButton.addEventListener("click", () => copyShareLink(shareUrl));
+    buttons.appendChild(copyButton);
+
+    container.appendChild(buttons);
+    return container;
+  }
+
+  // Copy an activity link to the clipboard
+  async function copyShareLink(shareUrl) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "absolute";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      showMessage("Activity link copied to clipboard!", "success");
+    } catch (error) {
+      console.error("Error copying link:", error);
+      showMessage("Could not copy the link. Please copy it manually.", "error");
+    }
   }
 
   // Event listeners for search and filter
