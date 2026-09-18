@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeLoginModal = document.querySelector(".close-login-modal");
   const loginMessage = document.getElementById("login-message");
 
+  // Theme elements
+  const themeToggle = document.getElementById("theme-toggle");
+  const themeToggleIcon = document.getElementById("theme-toggle-icon");
+
   // Activity categories with corresponding colors
   const activityTypes = {
     sports: { label: "Sports", color: "#e8f5e9", textColor: "#2e7d32" },
@@ -97,6 +101,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
     fetchActivities();
   }
+
+  // Apply the given theme ("dark" or "light") and update the toggle button
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+
+    const isDark = theme === "dark";
+    const label = isDark ? "Switch to light mode" : "Switch to dark mode";
+
+    themeToggleIcon.textContent = isDark ? "☀️" : "🌙";
+    themeToggle.setAttribute("aria-label", label);
+    themeToggle.setAttribute("title", label);
+    themeToggle.setAttribute("aria-pressed", isDark ? "true" : "false");
+  }
+
+  // Load the saved theme, falling back to the system preference
+  function initializeTheme() {
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark =
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+    const theme =
+      savedTheme === "dark" || savedTheme === "light"
+        ? savedTheme
+        : prefersDark
+        ? "dark"
+        : "light";
+
+    applyTheme(theme);
+  }
+
+  // Toggle between dark and light mode and remember the choice
+  function toggleTheme() {
+    const newTheme =
+      document.documentElement.getAttribute("data-theme") === "dark"
+        ? "light"
+        : "dark";
+
+    applyTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+  }
+
+  themeToggle.addEventListener("click", toggleTheme);
 
   // Check if user is already logged in (from localStorage)
   function checkAuthentication() {
@@ -862,6 +909,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   // Initialize app
+  initializeTheme();
   checkAuthentication();
   initializeFilters();
   fetchActivities();

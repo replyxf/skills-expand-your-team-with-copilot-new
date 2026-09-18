@@ -30,6 +30,44 @@
   --error-light: #ffebee;
   --info: #0c5460;
   --info-light: #d1ecf1;
+
+  color-scheme: light;
+}
+
+/* Dark theme overrides */
+[data-theme="dark"] {
+  /* Primary colors */
+  --primary: #5c6bc0;
+  --primary-light: #8e99f3;
+  --primary-dark: #26418f;
+  --primary-text: #ffffff;
+
+  /* Secondary colors */
+  --secondary: #ff9800;
+  --secondary-light: #ffc246;
+  --secondary-dark: #c66900;
+  --secondary-text: #1a1a1a;
+
+  /* Neutral colors */
+  --background: #121212;
+  --surface: #1e1e1e;
+  --text-primary: #e8e8e8;
+  --text-secondary: #b0b0b0;
+  --border: #3a3a3a;
+  --border-light: #2c2c2c;
+  --border-focus: #5a5a5a;
+
+  /* Feedback colors */
+  --success: #66bb6a;
+  --success-light: #1b3a1d;
+  --warning: #ffb74d;
+  --warning-light: #3d3421;
+  --error: #ef5350;
+  --error-light: #3d1f1f;
+  --info: #4dd0e1;
+  --info-light: #14343a;
+
+  color-scheme: dark;
 }
 
 * {
@@ -617,6 +655,19 @@ footer {
   position: absolute;
   top: 10px;
   right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#theme-toggle {
+  padding: 4px 10px;
+  color: var(--primary-text);
+}
+
+.theme-icon {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 #user-status {
